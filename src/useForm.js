@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import _ from 'lodash';
 
-import mapPaths from './Utils/PathMapper';
+import mapPaths from './Utils/mapPaths';
 
 export default function useForm(initialValues = {}) {
   const [form, setForm] = useState(initialValues);
@@ -23,7 +23,11 @@ export default function useForm(initialValues = {}) {
         const actualPath = _.replace(path, 'Remove', '');
         const newValues = _.clone(_.at(form, actualPath)[0]);
         _.pullAt(newValues, index);
-        const newForm = _.updateWith(_.clone(form), actualPath, () => newValues);
+        const newForm = _.updateWith(
+          _.clone(form),
+          actualPath,
+          () => newValues
+        );
         setForm(newForm);
       };
     }
@@ -40,6 +44,10 @@ export default function useForm(initialValues = {}) {
 
   return [
     form,
-    _.reduce(paths, (acc, path) => _.updateWith(acc, path, () => buildModelInput(path)), {}),
+    _.reduce(
+      paths,
+      (acc, path) => _.updateWith(acc, path, () => buildModelInput(path)),
+      {}
+    ),
   ];
 }

@@ -3,7 +3,7 @@ module.exports = {
     browser: true,
     es6: true,
   },
-  extends: 'airbnb',
+  extends: ['airbnb', 'plugin:jest/recommended', 'prettier'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -17,7 +17,10 @@ module.exports = {
   },
   plugins: [
     'react',
+    'prettier',
+    'jest'
   ],
   rules: {
+    'prettier/prettier': 'error'
   },
 };

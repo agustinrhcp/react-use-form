@@ -14,10 +14,12 @@ describe('mapPaths', () => {
   });
 
   it('with a form', () => {
-    expect(mapPaths({
-      user: '',
-      email: '',
-      password: '',
-    })).toEqual(['user', 'email', 'password']);
+    expect(
+      mapPaths({
+        user: '',
+        email: '',
+        password: '',
+      })
+    ).toEqual(['user', 'email', 'password']);
   });
 });
