@@ -21,6 +21,17 @@ module.exports = {
     'jest'
   ],
   rules: {
+    'react/jsx-filename-extension': [1, { 'extensions': ['.js'] }],
+    'import/no-extraneous-dependencies': ['error', {
+      'devDependencies': ['src/__test__/*.js']
+    }],
     'prettier/prettier': 'error'
+  },
+  env: {
+    'jest/globals': true,
+  },
+  globals: {
+    'mount': true,
+    'shallow': true,
   },
 };

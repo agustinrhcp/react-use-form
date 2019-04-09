@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "./node_modules/.bin/babel src --out-file dist/index.js"
   },
   "keywords": [
     "react",
@@ -16,6 +17,12 @@
     "form",
     "forms"
   ],
+  "jest": {
+    "verbose": true,
+    "setupFiles": [
+      "./src/__test__/setup.js"
+    ]
+  },
   "peerDependencies": {
     "react": "^16.8.1",
     "lodash": "^4.17.11"
@@ -23,11 +30,13 @@
   "author": "Agustín Cornú <agustincornu@fastmail.com> (http://github.com/agustinrhcp)",
   "license": "ISC",
   "devDependencies": {
+    "@babel/cli": "^7.4.3",
     "@babel/core": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
     "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.12.1",
     "enzyme-to-json": "^3.3.5",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
@@ -40,6 +49,7 @@
     "eslint-plugin-react-hooks": "^1.6.0",
     "jest": "^24.7.1",
     "prettier": "^1.16.4",
+    "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   }
