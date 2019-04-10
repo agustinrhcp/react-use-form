@@ -1,25 +1,33 @@
 import React from 'react';
-import { SimpleFormComponent } from './__test__/dummyComponents';
-
-const onSubmitMock = jest.fn();
+import {
+  SimpleFormComponent,
+  NestedFormComponent,
+  MultipleFormComponent,
+} from './__test__/dummyComponents';
 
 describe('useForm hook', () => {
-  let form;
+  const onSubmitMock = jest.fn();
 
-  const updateInput = (selector, value) => {
+  const updateInput = (form, selector, value) => {
     form.find(selector).simulate('change', { target: { value } });
   };
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('for a simple form', () => {
+    let form;
+
     beforeEach(() => {
       form = mount(<SimpleFormComponent onSubmit={onSubmitMock} />);
 
-      updateInput('[name="name"]', 'Bruce');
-      updateInput('[name="email"]', 'bruce@wayneenterprises.com');
-      updateInput('[name="password"]', 'B4TmanRulez');
+      updateInput(form, '[name="name"]', 'Bruce');
+      updateInput(form, '[name="email"]', 'bruce@wayneenterprises.com');
+      updateInput(form, '[name="password"]', 'B4TmanRulez');
     });
 
-    it('updates values properly', () => {
+    it('updates values', () => {
       expect(form.find('[name="name"]').props().value).toEqual('Bruce');
       expect(form.find('[name="email"]').props().value).toEqual(
         'bruce@wayneenterprises.com'
@@ -29,7 +37,7 @@ describe('useForm hook', () => {
       );
     });
 
-    it('submits the correct form', () => {
+    it('submits the values with the provided shape', () => {
       form.find('button').simulate('submit');
       expect(onSubmitMock).toHaveBeenCalledWith({
         name: 'Bruce',
@@ -40,10 +48,116 @@ describe('useForm hook', () => {
   });
 
   describe('for a nested form', () => {
-    // form = mount(<NestedFormComponent onSubmit={onSubmitMock} />);
-    //
-    // updateInput('[name="name"]', 'Bruce');
-    // updateInput('[name="email"]', 'bruce@wayneenterprises.com');
-    // updateInput('[name="password"]', 'B4TmanRulez');
+    let form;
+
+    beforeEach(() => {
+      form = mount(<NestedFormComponent onSubmit={onSubmitMock} />);
+
+      updateInput(form, '[name="address-line1"]', '1007 Mountain Drive');
+      updateInput(form, '[name="address-city"]', 'Gotham');
+      updateInput(form, '[name="address-state"]', 'NY');
+    });
+
+    it('updates values', () => {
+      expect(form.find('[name="address-line1"]').props().value).toEqual(
+        '1007 Mountain Drive'
+      );
+      expect(form.find('[name="address-city"]').props().value).toEqual(
+        'Gotham'
+      );
+      expect(form.find('[name="address-state"]').props().value).toEqual('NY');
+    });
+
+    it('submits the values with the provided shape', () => {
+      form.find('button').simulate('submit');
+      expect(onSubmitMock).toHaveBeenCalledWith({
+        address: {
+          line1: '1007 Mountain Drive',
+          line2: '',
+          city: 'Gotham',
+          state: 'NY',
+        },
+      });
+    });
+  });
+
+  describe('for a multiple form', () => {
+    let form;
+
+    beforeEach(() => {
+      form = mount(<MultipleFormComponent onSubmit={onSubmitMock} />);
+    });
+
+    describe('when adding forms', () => {
+      const addContact = (index, name, number) => {
+        form
+          .find('button')
+          .at(0)
+          .simulate('click');
+
+        updateInput(form, `input[name="contact-${index}-name"]`, name);
+        updateInput(form, `input[name="contact-${index}-number"]`, number);
+      };
+
+      beforeEach(() => {
+        addContact(0, 'Alfred', '123-123');
+        addContact(1, 'Gordon', '987-987');
+      });
+
+      it('updates the values', () => {
+        expect(form.find('[name="contact-0-name"]').props().value).toEqual(
+          'Alfred'
+        );
+        expect(form.find('[name="contact-0-number"]').props().value).toEqual(
+          '123-123'
+        );
+        expect(form.find('[name="contact-1-name"]').props().value).toEqual(
+          'Gordon'
+        );
+        expect(form.find('[name="contact-1-number"]').props().value).toEqual(
+          '987-987'
+        );
+      });
+
+      it('submits the values with the provided shape', () => {
+        form.find('button[type="submit"]').simulate('submit');
+        expect(onSubmitMock).toHaveBeenCalledWith({
+          contactList: [
+            {
+              name: 'Alfred',
+              number: '123-123',
+            },
+            {
+              name: 'Gordon',
+              number: '987-987',
+            },
+          ],
+        });
+      });
+
+      describe('when removing a form', () => {
+        beforeEach(() => {
+          form
+            .find('button')
+            .at(2)
+            .simulate('click');
+        });
+
+        it('removes the values for the passed index', () => {
+          expect(form.find('[name="contact-1-name"]')).toEqual({});
+          expect(form.find('[name="contact-1-number"]')).toEqual({});
+        });
+      });
+    });
+
+    describe('when submitting the form empty', () => {
+      beforeEach(() => {
+        form.find('button[type="submit"]').simulate('submit');
+      });
+
+      it('submits an empty list', () => {
+        expect(onSubmitMock).toHaveBeenCalledWith({ contactList: [] });
+      });
+    });
   });
 });

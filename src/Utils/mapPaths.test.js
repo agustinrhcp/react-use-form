@@ -5,6 +5,15 @@ describe('mapPaths', () => {
     expect(mapPaths([{ a: 'a' }, { b: 'b' }])).toEqual(['[0].a', '[1].b']);
   });
 
+  describe('with and empty array', () => {
+    it('returns array modifiers', () => {
+      expect(mapPaths({ contactList: [] })).toEqual([
+        'contactListAdd',
+        'contactListRemove',
+      ]);
+    });
+  });
+
   it('for simple object', () => {
     expect(mapPaths({ a: 'a', b: 'b' })).toEqual(['a', 'b']);
   });

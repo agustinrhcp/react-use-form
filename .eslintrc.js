@@ -18,13 +18,16 @@ module.exports = {
   plugins: [
     'react',
     'prettier',
-    'jest'
+    'jest',
+    'react-hooks'
   ],
   rules: {
     'react/jsx-filename-extension': [1, { 'extensions': ['.js'] }],
     'import/no-extraneous-dependencies': ['error', {
       'devDependencies': ['src/__test__/*.js']
     }],
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
     'prettier/prettier': 'error'
   },
   env: {
