@@ -1,9 +1,8 @@
 import React from 'react';
-import {
-  SimpleFormComponent,
-  NestedFormComponent,
-  MultipleFormComponent,
-} from './__test__/dummyComponents';
+
+import SimpleFormExample from './__test__/SimpleFormExample';
+import NestedFormExample from './__test__/NestedFormExample';
+import MultipleFormExample from './__test__/MultipleFormExample';
 
 describe('useForm hook', () => {
   const onSubmitMock = jest.fn();
@@ -20,7 +19,7 @@ describe('useForm hook', () => {
     let form;
 
     beforeEach(() => {
-      form = mount(<SimpleFormComponent onSubmit={onSubmitMock} />);
+      form = mount(<SimpleFormExample onSubmit={onSubmitMock} />);
 
       updateInput(form, '[name="name"]', 'Bruce');
       updateInput(form, '[name="email"]', 'bruce@wayneenterprises.com');
@@ -51,7 +50,7 @@ describe('useForm hook', () => {
     let form;
 
     beforeEach(() => {
-      form = mount(<NestedFormComponent onSubmit={onSubmitMock} />);
+      form = mount(<NestedFormExample onSubmit={onSubmitMock} />);
 
       updateInput(form, '[name="address-line1"]', '1007 Mountain Drive');
       updateInput(form, '[name="address-city"]', 'Gotham');
@@ -85,7 +84,7 @@ describe('useForm hook', () => {
     let form;
 
     beforeEach(() => {
-      form = mount(<MultipleFormComponent onSubmit={onSubmitMock} />);
+      form = mount(<MultipleFormExample onSubmit={onSubmitMock} />);
     });
 
     describe('when adding forms', () => {

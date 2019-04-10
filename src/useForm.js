@@ -12,8 +12,8 @@ export default function useForm(initialValues = {}) {
     if (_.endsWith(path, 'Add')) {
       return initialValue => {
         const actualPath = _.replace(path, 'Add', '');
-        const newValue = [..._.at(form, actualPath)[0], initialValue];
-        const newForm = _.updateWith(_.clone(form), actualPath, () => newValue);
+        const newValue = [..._.get(form, actualPath), initialValue];
+        const newForm = _.set(_.clone(form), actualPath, newValue);
         setForm(newForm);
       };
     }
@@ -21,13 +21,9 @@ export default function useForm(initialValues = {}) {
     if (_.endsWith(path, 'Remove')) {
       return index => {
         const actualPath = _.replace(path, 'Remove', '');
-        const newValues = _.clone(_.at(form, actualPath)[0]);
+        const newValues = _.clone(_.get(form, actualPath));
         _.pullAt(newValues, index);
-        const newForm = _.updateWith(
-          _.clone(form),
-          actualPath,
-          () => newValues
-        );
+        const newForm = _.set(_.clone(form), actualPath, newValues);
         setForm(newForm);
       };
     }
@@ -36,7 +32,7 @@ export default function useForm(initialValues = {}) {
       value: _.at(form, path)[0],
       onChange: event => {
         const { value } = event.target;
-        const newForm = _.updateWith(_.clone(form), path, () => value);
+        const newForm = _.set(_.clone(form), path, value);
         setForm(newForm);
       },
     };
@@ -44,10 +40,6 @@ export default function useForm(initialValues = {}) {
 
   return [
     form,
-    _.reduce(
-      paths,
-      (acc, path) => _.updateWith(acc, path, () => buildModelInput(path)),
-      {}
-    ),
+    _.reduce(paths, (acc, path) => _.set(acc, path, buildModelInput(path)), {}),
   ];
 }

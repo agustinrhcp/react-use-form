@@ -1,10 +1,14 @@
 {
-  "name": "react-use-form",
+  "name": "react-use-form-hook",
   "version": "1.0.0",
   "description": "Hook for handling forms",
   "main": "src/index.js",
   "publishConfig": {
-    "access": "restricted"
+    "access": "public"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/agustinrhcp/react-use-form"
   },
   "scripts": {
     "test": "jest",
