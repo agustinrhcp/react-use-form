@@ -5,7 +5,7 @@ import useForm from '../useForm';
 
 const FormWithCheckboxExample = ({ onSubmit }) => {
   const [values, fields] = useForm({
-    going: false,
+    desguised: false,
   });
 
   const handleSubmit = event => {
@@ -15,12 +15,13 @@ const FormWithCheckboxExample = ({ onSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="dummy">
-        Is going:
+      <label htmlFor="desguised">
+        under desguise?
         <input
+          id="desguised"
           type="checkbox"
-          checked={!!fields.going.value}
-          onChange={fields.going.onChange}
+          checked={!!fields.desguised.value}
+          onChange={fields.desguised.onChange}
         />
       </label>
 

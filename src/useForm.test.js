@@ -4,27 +4,27 @@ import SimpleFormExample from './__test__/SimpleFormExample';
 import NestedFormExample from './__test__/NestedFormExample';
 import MultipleFormExample from './__test__/MultipleFormExample';
 import FormWithCheckboxExample from './__test__/FormWithCheckboxExample';
+import FormWithRadioExample from './__test__/FormWithRadioExample';
 
 describe('useForm hook', () => {
+  let form;
   const onSubmitMock = jest.fn();
 
-  const updateInput = (form, selector, value) => {
+  const updateInput = (selector, value) => {
     form.find(selector).simulate('change', { target: { value } });
   };
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  const submit = () => form.find('button[type="submit"]').simulate('submit');
+
+  afterEach(jest.clearAllMocks);
 
   describe('for a simple form', () => {
-    let form;
-
     beforeEach(() => {
       form = mount(<SimpleFormExample onSubmit={onSubmitMock} />);
 
-      updateInput(form, '[name="name"]', 'Bruce');
-      updateInput(form, '[name="email"]', 'bruce@wayneenterprises.com');
-      updateInput(form, '[name="password"]', 'B4TmanRulez');
+      updateInput('[name="name"]', 'Bruce');
+      updateInput('[name="email"]', 'bruce@wayneenterprises.com');
+      updateInput('[name="password"]', 'B4TmanRulez');
     });
 
     it('updates values', () => {
@@ -38,7 +38,7 @@ describe('useForm hook', () => {
     });
 
     it('submits the values with the provided shape', () => {
-      form.find('button').simulate('submit');
+      submit();
       expect(onSubmitMock).toHaveBeenCalledWith({
         name: 'Bruce',
         email: 'bruce@wayneenterprises.com',
@@ -48,14 +48,12 @@ describe('useForm hook', () => {
   });
 
   describe('for a nested form', () => {
-    let form;
-
     beforeEach(() => {
       form = mount(<NestedFormExample onSubmit={onSubmitMock} />);
 
-      updateInput(form, '[name="address-line1"]', '1007 Mountain Drive');
-      updateInput(form, '[name="address-city"]', 'Gotham');
-      updateInput(form, '[name="address-state"]', 'NY');
+      updateInput('[name="address-line1"]', '1007 Mountain Drive');
+      updateInput('[name="address-city"]', 'Gotham');
+      updateInput('[name="address-state"]', 'NY');
     });
 
     it('updates values', () => {
@@ -82,8 +80,6 @@ describe('useForm hook', () => {
   });
 
   describe('for a multiple form', () => {
-    let form;
-
     beforeEach(() => {
       form = mount(<MultipleFormExample onSubmit={onSubmitMock} />);
     });
@@ -95,8 +91,8 @@ describe('useForm hook', () => {
           .at(0)
           .simulate('click');
 
-        updateInput(form, `input[name="contact-${index}-name"]`, name);
-        updateInput(form, `input[name="contact-${index}-number"]`, number);
+        updateInput(`input[name="contact-${index}-name"]`, name);
+        updateInput(`input[name="contact-${index}-number"]`, number);
       };
 
       beforeEach(() => {
@@ -120,7 +116,7 @@ describe('useForm hook', () => {
       });
 
       it('submits the values with the provided shape', () => {
-        form.find('button[type="submit"]').simulate('submit');
+        submit();
         expect(onSubmitMock).toHaveBeenCalledWith({
           contactList: [
             {
@@ -151,9 +147,7 @@ describe('useForm hook', () => {
     });
 
     describe('when submitting the form empty', () => {
-      beforeEach(() => {
-        form.find('button[type="submit"]').simulate('submit');
-      });
+      beforeEach(submit);
 
       it('submits an empty list', () => {
         expect(onSubmitMock).toHaveBeenCalledWith({ contactList: [] });
@@ -162,8 +156,6 @@ describe('useForm hook', () => {
   });
 
   describe('for a form with checkboxes', () => {
-    let form;
-
     beforeEach(() => {
       form = mount(<FormWithCheckboxExample onSubmit={onSubmitMock} />);
     });
@@ -173,12 +165,10 @@ describe('useForm hook', () => {
     });
 
     describe('and submitting', () => {
-      beforeEach(() => {
-        form.find('button[type="submit"]').simulate('submit');
-      });
+      beforeEach(submit);
 
       it('submits the field with a falsey value', () => {
-        expect(onSubmitMock).toHaveBeenCalledWith({ going: false });
+        expect(onSubmitMock).toHaveBeenCalledWith({ desguised: false });
       });
     });
 
@@ -194,12 +184,52 @@ describe('useForm hook', () => {
       });
 
       describe('and submitting', () => {
-        beforeEach(() => {
-          form.find('button[type="submit"]').simulate('submit');
-        });
+        beforeEach(submit);
 
         it('submits the field with a truthy value', () => {
-          expect(onSubmitMock).toHaveBeenCalledWith({ going: true });
+          expect(onSubmitMock).toHaveBeenCalledWith({ desguised: true });
+        });
+      });
+    });
+  });
+
+  describe('for a form with radio buttons', () => {
+    beforeEach(() => {
+      form = mount(<FormWithRadioExample onSubmit={onSubmitMock} />);
+    });
+
+    it('starts with inital value checked', () => {
+      expect(form.find('#batarang').props().checked).toEqual(true);
+      expect(form.find('#sharkSpray').props().checked).toEqual(false);
+      expect(form.find('#grapling').props().checked).toEqual(false);
+    });
+
+    describe('and submitting', () => {
+      beforeEach(submit);
+
+      it('submits the field with a initial value', () => {
+        expect(onSubmitMock).toHaveBeenCalledWith({ weapon: 'batarang' });
+      });
+    });
+
+    describe('when updating', () => {
+      beforeEach(() => {
+        form
+          .find('#grapling')
+          .simulate('change', { target: { value: 'grapling', type: 'radio' } });
+      });
+
+      it('updates the radios accordingly', () => {
+        expect(form.find('#batarang').props().checked).toEqual(false);
+        expect(form.find('#sharkSpray').props().checked).toEqual(false);
+        expect(form.find('#grapling').props().checked).toEqual(true);
+      });
+
+      describe('and submitting', () => {
+        beforeEach(submit);
+
+        it('submits the field with the updated value', () => {
+          expect(onSubmitMock).toHaveBeenCalledWith({ weapon: 'grapling' });
         });
       });
     });
