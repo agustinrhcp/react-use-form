@@ -3,6 +3,7 @@ import React from 'react';
 import SimpleFormExample from './__test__/SimpleFormExample';
 import NestedFormExample from './__test__/NestedFormExample';
 import MultipleFormExample from './__test__/MultipleFormExample';
+import FormWithCheckboxExample from './__test__/FormWithCheckboxExample';
 
 describe('useForm hook', () => {
   const onSubmitMock = jest.fn();
@@ -156,6 +157,50 @@ describe('useForm hook', () => {
 
       it('submits an empty list', () => {
         expect(onSubmitMock).toHaveBeenCalledWith({ contactList: [] });
+      });
+    });
+  });
+
+  describe('for a form with checkboxes', () => {
+    let form;
+
+    beforeEach(() => {
+      form = mount(<FormWithCheckboxExample onSubmit={onSubmitMock} />);
+    });
+
+    it('start with the checkbox unchecked', () => {
+      expect(form.find('[type="checkbox"]').props().checked).toEqual(false);
+    });
+
+    describe('and submitting', () => {
+      beforeEach(() => {
+        form.find('button[type="submit"]').simulate('submit');
+      });
+
+      it('submits the field with a falsey value', () => {
+        expect(onSubmitMock).toHaveBeenCalledWith({ going: false });
+      });
+    });
+
+    describe('when checking', () => {
+      beforeEach(() => {
+        form
+          .find('[type="checkbox"]')
+          .simulate('change', { target: { checked: true, type: 'checkbox' } });
+      });
+
+      it('updates the checkbox', () => {
+        expect(form.find('[type="checkbox"]').props().checked).toEqual(true);
+      });
+
+      describe('and submitting', () => {
+        beforeEach(() => {
+          form.find('button[type="submit"]').simulate('submit');
+        });
+
+        it('submits the field with a truthy value', () => {
+          expect(onSubmitMock).toHaveBeenCalledWith({ going: true });
+        });
       });
     });
   });

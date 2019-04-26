@@ -29,9 +29,10 @@ export default function useForm(initialValues = {}) {
     }
 
     return {
-      value: _.at(form, path)[0],
-      onChange: event => {
-        const { value } = event.target;
+      value: _.get(form, path),
+      onChange: ({ target }) => {
+        const value =
+          target.type === 'checkbox' ? target.checked : target.value;
         const newForm = _.set(_.clone(form), path, value);
         setForm(newForm);
       },
