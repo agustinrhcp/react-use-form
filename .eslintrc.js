@@ -21,6 +21,7 @@ module.exports = {
     'jest',
     'react-hooks'
   ],
+
   rules: {
     'react/jsx-filename-extension': [1, { 'extensions': ['.js'] }],
     'import/no-extraneous-dependencies': ['error', {

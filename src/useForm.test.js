@@ -5,6 +5,7 @@ import NestedFormExample from './__test__/NestedFormExample';
 import MultipleFormExample from './__test__/MultipleFormExample';
 import FormWithCheckboxExample from './__test__/FormWithCheckboxExample';
 import FormWithRadioExample from './__test__/FormWithRadioExample';
+import FormWithRadiosGroupExample from './__test__/FormWithRadiosGroupExample';
 
 describe('useForm hook', () => {
   let form;
@@ -230,6 +231,78 @@ describe('useForm hook', () => {
 
         it('submits the field with the updated value', () => {
           expect(onSubmitMock).toHaveBeenCalledWith({ weapon: 'grapling' });
+        });
+      });
+    });
+  });
+
+  describe('for a form with radios group, ()', () => {
+    beforeEach(() => {
+      form = mount(<FormWithRadiosGroupExample onSubmit={onSubmitMock} />);
+    });
+
+    it('starts with no inital values checked', () => {
+      expect(form.find('#batarang').props().checked).toEqual(false);
+      expect(form.find('#sharkSpray').props().checked).toEqual(false);
+      expect(form.find('#grapling').props().checked).toEqual(false);
+    });
+
+    describe('when checking a radio button', () => {
+      beforeEach(() => {
+        form
+          .find('#grapling')
+          .simulate('change', { target: { value: 'grapling', type: 'radio' } });
+      });
+
+      it('checks only the selected radio', () => {
+        expect(form.find('#batarang').props().checked).toEqual(false);
+        expect(form.find('#sharkSpray').props().checked).toEqual(false);
+        expect(form.find('#grapling').props().checked).toEqual(true);
+      });
+
+      describe('when unchecking', () => {
+        beforeEach(() => {
+          form.find('#grapling').simulate('change', {
+            target: { value: 'grapling', type: 'radio' },
+          });
+        });
+
+        it('checks only the selected radio', () => {
+          expect(form.find('#batarang').props().checked).toEqual(false);
+          expect(form.find('#sharkSpray').props().checked).toEqual(false);
+          expect(form.find('#grapling').props().checked).toEqual(false);
+        });
+
+        describe('and submitting', () => {
+          beforeEach(submit);
+
+          it('submits the field with the updated value', () => {
+            expect(onSubmitMock).toHaveBeenCalledWith({ weapons: [] });
+          });
+        });
+      });
+
+      describe('when checking another radio button', () => {
+        beforeEach(() => {
+          form.find('#batarang').simulate('change', {
+            target: { value: 'batarang', type: 'radio' },
+          });
+        });
+
+        it('checks only the selected radio', () => {
+          expect(form.find('#batarang').props().checked).toEqual(true);
+          expect(form.find('#sharkSpray').props().checked).toEqual(false);
+          expect(form.find('#grapling').props().checked).toEqual(true);
+        });
+
+        describe('and submitting', () => {
+          beforeEach(submit);
+
+          it('submits the field with the updated value', () => {
+            expect(onSubmitMock).toHaveBeenCalledWith({
+              weapons: ['grapling', 'batarang'],
+            });
+          });
         });
       });
     });

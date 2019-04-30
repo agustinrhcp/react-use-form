@@ -12,7 +12,7 @@ export default function useForm(initialValues = {}) {
     if (_.endsWith(path, 'Add')) {
       return initialValue => {
         const actualPath = _.replace(path, 'Add', '');
-        const newValue = [..._.get(form, actualPath), initialValue];
+        const newValue = [..._.get(form, actualPath), _.clone(initialValue)];
         const newForm = _.set(_.clone(form), actualPath, newValue);
         setForm(newForm);
       };
