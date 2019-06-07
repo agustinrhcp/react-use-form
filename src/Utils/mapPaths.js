@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
-function arrayModifiers(prefix) {
-  return prefix ? [`${prefix}Add`, `${prefix}Remove`] : [];
+function arrayModifier(prefix) {
+  return `${prefix}._isArray`;
 }
 
 function mapPaths(collection, prefix = '') {
@@ -9,8 +9,14 @@ function mapPaths(collection, prefix = '') {
     return prefix;
   }
 
-  if (_.isArray(collection) && _.isEmpty(collection)) {
-    return arrayModifiers(prefix);
+  if (_.isArray(collection)) {
+    if (!prefix.length) {
+      throw Error('Form must be an object');
+    }
+
+    if (_.isEmpty(collection)) {
+      return arrayModifier(prefix);
+    }
   }
 
   return _.flatMap(collection, (value, key, coll) => {
@@ -18,7 +24,10 @@ function mapPaths(collection, prefix = '') {
       return mapPaths(value, `${prefix.length ? `${prefix}.` : ''}${key}`);
     }
 
-    return [...arrayModifiers(prefix), ...mapPaths(value, `${prefix}[${key}]`)];
+    return [
+      arrayModifier(prefix),
+      ...mapPaths(value, `${prefix}.list[${key}]`),
+    ];
   });
 }
 
